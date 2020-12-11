@@ -1,11 +1,13 @@
 package com.example.sharemeal.mainFragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,13 +22,18 @@ import android.widget.TextView;
 
 import com.example.sharemeal.R;
 import com.example.sharemeal.activity.AddMealActivity;
+import com.example.sharemeal.activity.MealAdapter;
+import com.example.sharemeal.activity.UdateItem;
 import com.example.sharemeal.activity.models.MealModel;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -37,15 +44,24 @@ import java.util.Map;
 
 
 public class MyMealFragment extends Fragment {
-    String user;
     Button addNewMeal;
-    String TAG="MyMealFragment";
     private RecyclerView recyclerView;
     FirebaseFirestore firebaseFirestore;
-    FirestoreRecyclerAdapter adapter;
+    MealAdapter adapter;
     private FirebaseAuth mAuth;
-    String userid,idMeal;
+    String userid;
+    FirebaseUser currentFirebaseUser;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        if (getArguments() != null) {
+//        }
+    }
+
+    public MyMealFragment() {
+
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,8 +70,11 @@ public class MyMealFragment extends Fragment {
         addNewMeal=rootView.findViewById(R.id.idAddMeal);
         firebaseFirestore=FirebaseFirestore.getInstance();
         recyclerView = rootView.findViewById(R.id.rv_my_meal);
+        currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
+
         mAuth = FirebaseAuth.getInstance();
         userid = mAuth.getCurrentUser().getUid();
+
 
         addNewMeal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,52 +85,45 @@ public class MyMealFragment extends Fragment {
         });
 
         Query query=firebaseFirestore.collection("meal").whereEqualTo("userid",userid.toString());
-        FirestoreRecyclerOptions<MealModel> options= new FirestoreRecyclerOptions.Builder<MealModel>()
+        FirestoreRecyclerOptions<MealModel> options = new FirestoreRecyclerOptions.Builder<MealModel>()
                 .setQuery(query, MealModel.class)
                 .build();
 
 
+        adapter= new MealAdapter(options);
 
-        adapter= new FirestoreRecyclerAdapter<MealModel, MealViewHolder>(options) {
-            @NonNull
-            @Override
-            public MealViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.layoutcard,parent, false);
-                return new MealViewHolder(view);
-            }
-
-            @Override
-            protected void onBindViewHolder(@NonNull MealViewHolder holder, int i, @NonNull MealModel mealModel) {
-                holder.name.setText(mealModel.getName());
-                holder.data.setText(mealModel.getData());
-                holder.status.setText(mealModel.getStatus());
-                holder.pickHour.setText(mealModel.getPickHour());
-            }
-        };
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
 
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recyclerView);
+
+        adapter.setOnItemButtonClickListener(new MealAdapter.OnItemButtonClickListener() {
+            @Override
+            public void onItemClick(DocumentSnapshot snapshot, int position) {
+                MealModel model=snapshot.toObject(MealModel.class);
+                adapter.updateDocument(position);
+                Intent intent = new Intent(getActivity(), UdateItem.class);
+                intent.putExtra("position",String.valueOf(position));
+                startActivity(intent);
+
+
+            }
+        });
         return rootView;
     }
-
-    private class MealViewHolder extends RecyclerView.ViewHolder {
-        private TextView name;
-        private TextView data;
-        private TextView status;
-        private TextView pickHour;
-
-        public MealViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            name = itemView.findViewById(R.id.tv_meal_name);
-            data = itemView.findViewById(R.id.tv_restInformation);
-            status = itemView.findViewById(R.id.tv_status);
-            pickHour = itemView.findViewById(R.id.tv_pickup_h);
-        }
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -123,4 +135,8 @@ public class MyMealFragment extends Fragment {
         super.onStop();
         adapter.stopListening();
     }
+
+
+
+
 }

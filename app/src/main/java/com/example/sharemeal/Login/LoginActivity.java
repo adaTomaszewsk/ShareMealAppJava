@@ -86,6 +86,7 @@ public class LoginActivity extends AppCompatActivity{
         mAuth = FirebaseAuth.getInstance();
 
 
+       // a=userid;
 
         createRequest();
 

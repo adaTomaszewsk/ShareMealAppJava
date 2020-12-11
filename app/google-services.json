@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "135229201487",
+    "firebase_url": "https://sharemeal-f6381.firebaseio.com",
+    "project_id": "sharemeal-f6381",
+    "storage_bucket": "sharemeal-f6381.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135229201487:android:2b72ad5fcab65dde891e3a",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135229201487-55kl7dm3f21bfdpbh1h981mkgo3t8amq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAk3cA3hMi7AeYh3PULzppGJTmEMISih4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "135229201487-55kl7dm3f21bfdpbh1h981mkgo3t8amq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135229201487:android:f0e6db633626ddd5891e3a",
+        "android_client_info": {
+          "package_name": "com.example.sharemeal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135229201487-55kl7dm3f21bfdpbh1h981mkgo3t8amq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAk3cA3hMi7AeYh3PULzppGJTmEMISih4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "135229201487-55kl7dm3f21bfdpbh1h981mkgo3t8amq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
